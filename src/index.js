@@ -1,8 +1,8 @@
 import Interaction from 'ol/interaction/Interaction';
-import VectorLayer from 'ol/layer/Vector.js';
-import VectorSource from 'ol/source/Vector.js';
-import { getChangeEventType } from 'ol/Object.js';
-import InteractionProperty from 'ol/Property.js';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import { getChangeEventType } from 'ol/Object';
+import InteractionProperty from 'ol/interaction/Property';
 
 import { getCenter as getExtentCenter } from 'ol/extent';
 import { getDistance as getSphericalDistance } from 'ol/sphere';

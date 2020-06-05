@@ -49,7 +49,17 @@ Renders a regular grid of points within the current view extents. Intended for u
 
 ### Via NPM
 
-*TODO...*
+```sh
+npm install git://github.com/symbioquine/ol-grid.git#v1.0
+```
+
+```Javascript
+import Grid from 'ol-grid';
+
+...
+
+map.addInteraction(new olGrid());
+```
 
 ## API
 
