@@ -2,7 +2,6 @@ import Interaction from 'ol/interaction/Interaction';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { getChangeEventType } from 'ol/Object';
-import InteractionProperty from 'ol/interaction/Property';
 
 import { getCenter as getExtentCenter } from 'ol/extent';
 import { getDistance as getSphericalDistance } from 'ol/sphere';
@@ -10,7 +9,6 @@ import {transform} from 'ol/proj';
 
 import Feature from 'ol/Feature';
 import { MultiPoint, Point } from 'ol/geom';
-import { getVectorContext } from 'ol/render';
 
 /**
  * @typedef {Object} Options
@@ -50,8 +48,6 @@ export default class Grid extends Interaction {
     this.yGridSize = options.yGridSize || DEFAULT_GRID_SIZE;
     this.maxPointsPerSide = options.maxPointsPerSide || DEFAULT_MAX_POINTS_PER_SIDE;
 
-    this.updateGridDescription_();
-
     /**
      * Draw overlay where our grid feature is drawn.
      * @type {VectorLayer}
@@ -69,8 +65,10 @@ export default class Grid extends Interaction {
      * @private
      */
     this.gridFeature_ = new Feature({
-      geometry: new MultiPoint([this.originCoordinate])
+      geometry: new MultiPoint([])
     });
+
+    this.updateGridDescription_();
 
     this.overlay_.getSource().addFeature(this.gridFeature_);
 
@@ -81,7 +79,8 @@ export default class Grid extends Interaction {
   /**
    * Get a feature containing the current grid points. Callers should not
    * modify the feature or its geometry, but may use it to modify the behavior
-   * of the map - such as adding it to a Snap interaction.
+   * of the map - such as adding it to a Snap interaction. The feature geometry
+   * is empty when the grid is not active.
    * @return {Feature} grid feature with a single MultiPoint geometry.
    * @api
    */
@@ -158,7 +157,6 @@ export default class Grid extends Interaction {
   setMap(map) {
     super.setMap(map);
     this.updateState_();
-    this.updateGridDescription_();
   }
 
   /**
@@ -168,6 +166,7 @@ export default class Grid extends Interaction {
     const map = this.getMap();
     const active = this.getActive();
     this.overlay_.setMap(active ? map : null);
+    this.updateGridDescription_();
   }
 
   /**
@@ -176,7 +175,10 @@ export default class Grid extends Interaction {
   updateGridDescription_() {
     const map = this.getMap();
 
-    if (!map || !this.originCoordinate || !this.xGridSize || !this.yGridSize) {
+    if (!map || !this.originCoordinate || !this.xGridSize || !this.yGridSize || !this.getActive()) {
+      this.gridDescription_ = null;
+      this.gridFeature_.getGeometry().setCoordinates([]);
+      this.changed();
       return;
     }
 
@@ -290,8 +292,6 @@ export default class Grid extends Interaction {
     );
 
     this.gridFeature_.getGeometry().setCoordinates(gridPoints);
-
-    const vectorContext = getVectorContext(event);
   }
 
   calculateLocalSphereNormalizationCoefficients(origin) {

@@ -1,6 +1,6 @@
 {
   "name": "ol-grid",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "OpenLayers dynamic grid implementation.",
   "license": "MIT",
   "repository": {

@@ -61,8 +61,13 @@
       });
 
       createMap(map => {
-        map.addInteraction(new olGrid({ originCoordinate: [0, 0], rotationAnchorCoordinate: [1, 1], xGridSize: 5, yGridSize: 10, }));
+        const grid = new olGrid({ originCoordinate: [0, 0], rotationAnchorCoordinate: [1, 1], xGridSize: 5, yGridSize: 10, });
+        map.addInteraction(grid);
         map.getView().setZoom(20);
+
+        setInterval(function() {
+          grid.setActive(!grid.getActive());
+        }, 5000);
       });
 
     </script>

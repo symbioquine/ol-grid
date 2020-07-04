@@ -112,7 +112,8 @@ Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Globa
 
 Get a feature containing the current grid points. Callers should not
 modify the feature or its geometry, but may use it to modify the behavior
-of the map - such as adding it to a Snap interaction.
+of the map - such as adding it to a Snap interaction. The feature geometry
+is empty when the grid is not active.
 
 Returns **Feature** grid feature with a single MultiPoint geometry.
 
@@ -176,3 +177,13 @@ Set the style of the grid points.
 ### 
 
 Type: Interaction.InteractionOptions
+
+## Development
+
+`npm install` - Install JavaScript dependencies in `./node_modules` and create
+`package-lock.json`.
+
+`npm run dev` - Start a Webpack development server at https://localhost:8080
+which will live-update as code is changed during development.
+
+`npm run build` - Generate the final build artifacts.
