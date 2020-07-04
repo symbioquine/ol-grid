@@ -50,7 +50,7 @@ Renders a regular grid of points within the current view extents. Intended for u
 ### Via NPM
 
 ```sh
-npm install git://github.com/symbioquine/ol-grid.git#v1.0
+npm install git://github.com/symbioquine/ol-grid.git#v1.1
 ```
 
 ```Javascript
