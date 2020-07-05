@@ -70,6 +70,18 @@
         }, 5000);
       });
 
+      createMap(map => {
+        var xGridSize = 5;
+        const grid = new olGrid({ originCoordinate: [0, 0], rotationAnchorCoordinate: [1, 1], xGridSize, yGridSize: 10, });
+        map.addInteraction(grid);
+        map.getView().setZoom(20);
+
+        setInterval(function() {
+          xGridSize = (xGridSize + 1) % 5;
+          grid.setXGridSize(xGridSize);
+        }, 1000);
+      });
+
     </script>
   </body>
 </html>

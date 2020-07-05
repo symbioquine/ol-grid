@@ -212,8 +212,10 @@ export default class Grid extends Interaction {
     const riseFactor = rise / len;
     const runFactor = run / len;
 
+    const noOldGridDescription = !this.gridDescription_;
+
     this.gridDescription_ = {
-      originPoint: new Point(this.originCoordinate),
+      originCoordinate: this.originCoordinate,
       riseFactor,
       runFactor,
       xDim: this.xGridSize,
@@ -221,6 +223,15 @@ export default class Grid extends Interaction {
     };
 
     this.changed();
+  }
+
+  /**
+   * @inheritDoc
+   * @api
+   */
+  changed() {
+    super.changed();
+    this.overlay_.changed();
   }
 
   /**
@@ -239,7 +250,15 @@ export default class Grid extends Interaction {
 
     const viewExtent = map.getView().calculateExtent(map.getSize());
 
-    const selectedOriginCoords = gridDescription.originPoint.getCoordinates();
+    const gridDescriptionUnchanged = gridDescription === this.lastGridDescription_ || JSON.stringify(gridDescription) === JSON.stringify(this.lastGridDescription_);
+    const viewExtentUnchanged = viewExtent === this.lastViewExtent_ || JSON.stringify(viewExtent) === JSON.stringify(this.lastViewExtent_);
+
+    // No need to recalculate the grid geometry if nothing has changed
+    if (gridDescriptionUnchanged && viewExtentUnchanged) {
+      return;
+    }
+
+    const selectedOriginCoords = gridDescription.originCoordinate;
 
     // Calculate orthogonal basis vectors for the grid
     let xBasisVector = [
@@ -252,7 +271,7 @@ export default class Grid extends Interaction {
     ];
 
     const localSphereNormalizationCoefficients = this
-      .calculateLocalSphereNormalizationCoefficients(gridDescription.originPoint);
+      .calculateLocalSphereNormalizationCoefficients(new Point(gridDescription.originCoordinate));
 
     xBasisVector = elementWiseVectorProduct(xBasisVector,
       localSphereNormalizationCoefficients);
@@ -291,6 +310,8 @@ export default class Grid extends Interaction {
       this.maxPointsPerSide,
     );
 
+    this.lastGridDescription_ = gridDescription;
+    this.lastViewExtent_ = viewExtent;
     this.gridFeature_.getGeometry().setCoordinates(gridPoints);
   }
 
