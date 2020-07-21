@@ -22,7 +22,7 @@ Renders a regular grid of points within the current view extents. Intended for u
       }
     </style>
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/build/ol.js"></script>
-    <script src="https://github.com/symbioquine/ol-grid/releases/download/v1.0/ol-grid.umd.js"></script>
+    <script src="https://github.com/symbioquine/ol-grid/releases/download/v1.1.2/ol-grid.umd.js"></script>
     <title>OpenLayers ol-grid example</title>
   </head>
   <body>
@@ -50,7 +50,7 @@ Renders a regular grid of points within the current view extents. Intended for u
 ### Via NPM
 
 ```sh
-npm install git://github.com/symbioquine/ol-grid.git#v1.1.1
+npm install git://github.com/symbioquine/ol-grid.git#v1.1.2
 ```
 
 ```Javascript
