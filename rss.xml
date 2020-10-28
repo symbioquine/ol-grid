@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Symbioquine]]></title><description><![CDATA[Here is written stuff about systems, technology, ecology, and more.]]></description><link>https://symbioquine.net</link><image><url>https://symbioquine.net/logos/logo-48.png</url><title>Symbioquine</title><link>https://symbioquine.net</link></image><generator>GatsbyJS Advanced Starter</generator><lastBuildDate>Wed, 28 Oct 2020 02:49:16 GMT</lastBuildDate><atom:link href="https://symbioquine.net/rss.xml" rel="self" type="application/rss+xml"/><copyright><![CDATA[Copyright © 2020. All rights reserved.]]></copyright><item><title><![CDATA[EPever MPPT Solar Charge Controller Monitoring Hardware]]></title><description><![CDATA[Cheap MPPT solar charge controllers have become ubiquitous. Many of these sport RS232 or RS485/Modbus ports
+allowing the controllers to be…]]></description><link>https://symbioquine.net/2020-10-27-epever-esp-8266-controller</link><guid isPermaLink="false">https://symbioquine.net/2020-10-27-epever-esp-8266-controller</guid><category><![CDATA[Solar]]></category><category><![CDATA[Microcontrollers]]></category><category><![CDATA[Off-grid]]></category><pubDate>Tue, 27 Oct 2020 07:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Cheap MPPT solar charge controllers have become ubiquitous. Many of these sport &lt;a href=&quot;https://en.wikipedia.org/wiki/RS-232&quot;&gt;RS232&lt;/a&gt; or &lt;a href=&quot;https://en.wikipedia.org/wiki/RS-485&quot;&gt;RS485&lt;/a&gt;/&lt;a href=&quot;https://en.wikipedia.org/wiki/Modbus&quot;&gt;Modbus&lt;/a&gt; ports
+allowing the controllers to be extended via proprietary hardware/software for advanced monitoring and control use-cases.&lt;/p&gt;
+&lt;p&gt;Since this Spring I have been experimenting with the EPever (EPSolar) line of MPPT solar charge controllers which have RS485 interfaces and thought it would be worthwhile to share my
+learnings in the hope they will be useful to others.&lt;/p&gt;
+&lt;p&gt;This post will focus on the specific hardware I worked with, however the techniques are applicable to similar hardware.&lt;/p&gt;
+&lt;p&gt;At the bottom of this post I have linked to similar projects and build logs - while there are many, I believe the content here adds materially in terms of discussing the downsides of using the Raspberry Pi for this application
+and, for the esp8266 part of the build, showing the simpler wiring which results from choosing an RS485 adapter which does automatic flow control.&lt;/p&gt;
+&lt;h2 id=&quot;the-first-pi&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#the-first-pi&quot; aria-label=&quot;the first pi permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;The First Pi&lt;/h2&gt;
+&lt;p&gt;Early in the Spring I was configuring a couple tiny independent solar systems - one to power networking hardware to get internet on an off-grid property from a local &lt;a href=&quot;https://en.wikipedia.org/wiki/Wireless_Internet_service_provider&quot;&gt;WISP&lt;/a&gt;
+and another to provide incidental power for the construction phase of my skoolie conversion.&lt;/p&gt;
+&lt;p&gt;Naturally, I wanted to capture data on the performance of these systems over time to help gain a more intuitive hands-on understanding of the power small &quot;renewable&quot; energy systems can provide. Also
+I anticipate the data will be helpful in understanding the aging of the systems&apos; batteries - and possibly panels.&lt;/p&gt;
+&lt;p&gt;My initial attempts involved a Raspberry Pi 3B and a RS485-to-RS232 adapter. I used a bit of python code and the excellent &lt;a href=&quot;https://github.com/Salamek/epsolar-tracer&quot;&gt;epsolar-tracer&lt;/a&gt; library to poll the
+Tracer 3210AN and publishing metrics to &lt;a href=&quot;https://graphiteapp.org/&quot;&gt;Carbon/Graphite&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;After a fairly steep learning curve with half-duplex RS485 adapters, I got that working and was pleased to have some day-over-day performance data.&lt;/p&gt;
+&lt;p&gt;At this point my main complaint was that since only one device can connect to the RS485 port at a time, I couldn&apos;t have both remote monitoring and the handy &lt;a href=&quot;https://www.epsolarpv.com/product/55.html&quot;&gt;MT-50&lt;/a&gt; connected simultaneously.&lt;/p&gt;
+&lt;h2 id=&quot;the-second-pi&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#the-second-pi&quot; aria-label=&quot;the second pi permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;The Second Pi&lt;/h2&gt;
+&lt;p&gt;I set out to figure out how to get both the local display and remote monitoring working at the same time.&lt;/p&gt;
+&lt;p&gt;Since the Raspberry Pi only has 1 hardware serial port, I got some &lt;a href=&quot;https://www.amazon.com/dp/B00LZV1G6K/&quot;&gt;USB serial adapters&lt;/a&gt; and decided to proxy requests from the MT-50 while still polling for data to publish to Carbon.&lt;/p&gt;
+&lt;p&gt;Proxying the requests was unexpectedly complicated because I discovered that the MT-50 doesn&apos;t read data via the &lt;a href=&quot;http://www.solar-elektro.cz/data/dokumenty/1733_modbus_protocol.pdf&quot;&gt;documented modbus commands&lt;/a&gt;.
+Most important of the undocumented commands the MT-50 uses is one for reading sparse/discontiguous registers which I have documented in &lt;a href=&quot;https://gist.github.com/symbioquine/95ba2abaf046c8e034b41e4cf3c334a9&quot;&gt;this gist&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;With the protocol bits figured out and a nice watertight box, I had a passable system component which publishes metrics and still allows the local display to work.&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 690px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/7e28122fe2d5b6daba704bcdedc5a5d6/72e01/second_pi.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 75.14450867052024%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAPABQDASIAAhEBAxEB/8QAFgABAQEAAAAAAAAAAAAAAAAABAAC/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAH/2gAMAwEAAhADEAAAAXCYCH2av//EABoQAAIDAQEAAAAAAAAAAAAAAAECABESIQT/2gAIAQEAAQUCE1Xo4Z0B8WjWv//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8BP//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQIBAT8BP//EAB4QAAEDBAMAAAAAAAAAAAAAAAABESECEDEyIlGh/9oACAEBAAY/AsC1cm8tq5tKL0Rg/8QAHBAAAwEAAgMAAAAAAAAAAAAAAAERITFRYZHB/9oACAEBAAE/IZX1TUbVRiaorGk8MaN0OW9EBx0P/9oADAMBAAIAAwAAABCPD//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8QP//EABURAQEAAAAAAAAAAAAAAAAAABAh/9oACAECAQE/EKf/xAAbEAEBAQADAQEAAAAAAAAAAAABEQAhMWFRwf/aAAgBAQABPxB0Bw7QDMIbAQdAo3y4DxpluoiU/wBmlJvJBHxppXV/Q43/2Q==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;A Raspberry Pi in a watertight box with dual usb-serial and RS232-to-RS485 adapters&quot;
+        title=&quot;A Raspberry Pi in a watertight box with dual usb-serial and RS232-to-RS485 adapters&quot;
+        src=&quot;/static/7e28122fe2d5b6daba704bcdedc5a5d6/15ec7/second_pi.jpg&quot;
+        srcset=&quot;/static/7e28122fe2d5b6daba704bcdedc5a5d6/9ac50/second_pi.jpg 173w,
+/static/7e28122fe2d5b6daba704bcdedc5a5d6/8d48c/second_pi.jpg 345w,
+/static/7e28122fe2d5b6daba704bcdedc5a5d6/15ec7/second_pi.jpg 690w,
+/static/7e28122fe2d5b6daba704bcdedc5a5d6/72e01/second_pi.jpg 1024w&quot;
+        sizes=&quot;(max-width: 690px) 100vw, 690px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Unfortunately, there were still several issues with this strategy;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Raspberry Pi fail due to how quickly SD cards wear out and result in filesystem corruption - this is supposedly surmountable by limiting or completely disabling writes, but I haven&apos;t figured out how to do this while still
+keep the ability to remotely push control-program/OS updates&lt;/li&gt;
+&lt;li&gt;Raspberry Pi use quite a bit of energy - over 1 watt &lt;a href=&quot;http://www.pidramble.com/wiki/benchmarks/power-consumption&quot;&gt;even idle&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;The easiest way I found to securely publish to Carbon was via an SSH tunnel which adds unnecessary complexity and failure-points&lt;/li&gt;
+&lt;li&gt;The Raspberry Pi is powered from the &apos;load&apos; output of the charge controller - meaning the Pi can&apos;t be used for toggling power to the load without also turning itself off&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;and-now-for-something-a-little-different&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#and-now-for-something-a-little-different&quot; aria-label=&quot;and now for something a little different permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;And Now for Something A Little Different&lt;/h2&gt;
+&lt;p&gt;I decided to drop the Raspberry Pi and MT-50 in favor of a much simpler component built around the esp8266. This has a number of advantages;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Low power - I haven&apos;t spent much effort optimizing here, but it seems to be on the order of half a watt under load&lt;/li&gt;
+&lt;li&gt;Reliability - there are many fewer points of failure without the complexities of a full OS/filesystem/etc while still supporting remote updates&lt;/li&gt;
+&lt;li&gt;1 plug - since the esp8266 uses so little power, it can powered directly via the charge controller&apos;s RS485 port allowing for the unit to remain powered even when the charge controller load output is off&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Maintaining the ssh tunnel from the esp8266 didn&apos;t seem practical so I switched to publishing the metrics to an authenticated InfluxDB endpoint over HTTPS.&lt;/p&gt;
+&lt;h3 id=&quot;materials&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#materials&quot; aria-label=&quot;materials permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Materials&lt;/h3&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 690px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/2b0d73af4c758816812455437f86e967/2b013/materials.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 58.95953757225434%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAMABQDASIAAhEBAxEB/8QAGAAAAgMAAAAAAAAAAAAAAAAAAAQBAgP/xAAVAQEBAAAAAAAAAAAAAAAAAAAAAf/aAAwDAQACEAMQAAABb1leGyhX/8QAGxAAAgEFAAAAAAAAAAAAAAAAAQIDABARMTP/2gAIAQEAAQUCCmjIFYSZs/Zdf//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8BP//EABQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQIBAT8BP//EABwQAAEEAwEAAAAAAAAAAAAAAAEAAhARITFxgf/aAAgBAQAGPwKrcPVWSStQ3hj/xAAcEAEAAgIDAQAAAAAAAAAAAAABACERMRBRkfD/2gAIAQEAAT8hQZA73ZrUFLqohyn2YsvUNnxXH//aAAwDAQACAAMAAAAQ68//xAAUEQEAAAAAAAAAAAAAAAAAAAAQ/9oACAEDAQE/ED//xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAgEBPxBH/8QAHBABAQACAgMAAAAAAAAAAAAAAREAITFBYZGx/9oACAEBAAE/EH16iUrzfB1gsFIKBHq3JGHDS0V13gu7T742GjnP/9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Consumable materials used in this build&quot;
+        title=&quot;Consumable materials used in this build&quot;
+        src=&quot;/static/2b0d73af4c758816812455437f86e967/15ec7/materials.jpg&quot;
+        srcset=&quot;/static/2b0d73af4c758816812455437f86e967/9ac50/materials.jpg 173w,
+/static/2b0d73af4c758816812455437f86e967/8d48c/materials.jpg 345w,
+/static/2b0d73af4c758816812455437f86e967/15ec7/materials.jpg 690w,
+/static/2b0d73af4c758816812455437f86e967/af659/materials.jpg 1035w,
+/static/2b0d73af4c758816812455437f86e967/89b2d/materials.jpg 1380w,
+/static/2b0d73af4c758816812455437f86e967/2b013/materials.jpg 1700w&quot;
+        sizes=&quot;(max-width: 690px) 100vw, 690px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.amazon.com/dp/B081CSJV2V/&quot;&gt;ESP8266&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.amazon.com/dp/B082Y19KV9/&quot;&gt;Automatic Flow Control UART to RS485 Converter&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.amazon.com/dp/B07K7445H5/&quot;&gt;RJ45 Waterproof Coupler&lt;/a&gt; - There are probably more cost effective options and the threads are a little fragile on these&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.thermofisher.com/order/catalog/product/2118-0008&quot;&gt;Nalgene 2118-0008&lt;/a&gt; - Any convenient container should also work&lt;/li&gt;
+&lt;li&gt;5 Female jumper wires&lt;/li&gt;
+&lt;li&gt;~4 inches of ethernet cable with one end installed&lt;/li&gt;
+&lt;li&gt;Ethernet cable to connect assembled device to the charge controller&lt;/li&gt;
+&lt;li&gt;Solder&lt;/li&gt;
+&lt;li&gt;Tools&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;the-build&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#the-build&quot; aria-label=&quot;the build permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;The Build&lt;/h3&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 690px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/590d0a621de6429fd181959e68927812/a878e/diagram_wiring.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 50.86705202312138%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAYAAAC0VX7mAAAACXBIWXMAAAuBAAALgQETQ8PIAAAB2ElEQVQoz52SS2sTURiG528ItmAbq9aOuLAWEgRXdulCcdEWoVhRpBgX3lK3uqihjQgK4g/QFFxIIdRoc2nFIigtjZrMaYmKCW1pO2PSJFOSmXmcTEwJvbjwPbyc853L833ncCS2q1LB/K1hmYYdWH8nrS1bRtm26YQbuTzJxBzzs5/Jr63ZExtIO4CGhaGu2p3eAGzIVy5sjaffT/Pk8UP8/vt8mIpDsYikaSrptCClzCEWEuRzK+hZwXeR5OnzZwwPPyDwaISRgB9/YJSF5CdK+Z+Ucr+43H+BttYmXK4mhryDUC4jCSVFeCJEaPw10Xdh0opCVlviVSyGp/sMJz2duE+7OSS3c7Cjncn4OD+yX0ilF+nrO48sH6GrU+bOTa9TtaSqKouK4NvsPEriK5XiprOwoq0yEYkyGYsw83GGt9EIofAbVHXdWTftdqm/h7aW/XQdd+G7fb0GNAwDfVOnpJcoFAv2tp3vtpss0+LG4ABnTx3DI7dy9cpADbjrZstyXE223aZp1iq0+4u95+h2y5w4egCv91oNWD/c6EboXq7Kd/cWh13NtDTvY+ieb+8K/3lVG1avUgjBWPAlweALpuLx/wPWoVXpus7y8hKZTIb16se29QcSG71SK7iH/QAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Wiring diagram showing RS485 connection through adapter to ESP8266&quot;
+        title=&quot;Wiring diagram showing RS485 connection through adapter to ESP8266&quot;
+        src=&quot;/static/590d0a621de6429fd181959e68927812/1e043/diagram_wiring.png&quot;
+        srcset=&quot;/static/590d0a621de6429fd181959e68927812/991de/diagram_wiring.png 173w,
+/static/590d0a621de6429fd181959e68927812/e4d6b/diagram_wiring.png 345w,
+/static/590d0a621de6429fd181959e68927812/1e043/diagram_wiring.png 690w,
+/static/590d0a621de6429fd181959e68927812/e3189/diagram_wiring.png 1035w,
+/static/590d0a621de6429fd181959e68927812/b1001/diagram_wiring.png 1380w,
+/static/590d0a621de6429fd181959e68927812/a878e/diagram_wiring.png 2048w&quot;
+        sizes=&quot;(max-width: 690px) 100vw, 690px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Start by stripping about 2&quot; of the outer ethernet cable housing and removing the striped wires. The ground and +5v - brown and orange respectively - are left long while the RS485 A/B wires are trimmed short.&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 690px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/6ec658c181f0a0e20235545aed2fbe53/40317/inner_cable_prep.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 41.61849710982659%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAIABQDASIAAhEBAxEB/8QAFwABAAMAAAAAAAAAAAAAAAAAAAIDBf/EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhADEAAAAdGYWg//xAAYEAEAAwEAAAAAAAAAAAAAAAABAAMQEf/aAAgBAQABBQIqSHc//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPwE//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAgEBPwE//8QAGxAAAQQDAAAAAAAAAAAAAAAAAQACAxAhMoH/2gAIAQEABj8CxI5bk8r/xAAZEAADAQEBAAAAAAAAAAAAAAAAAREhYYH/2gAIAQEAAT8hfua8RFx+AJZrp//aAAwDAQACAAMAAAAQe/8A/8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPxA//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAgEBPxA//8QAGxABAAICAwAAAAAAAAAAAAAAAQAxESFRYZH/2gAIAQEAAT8QRB0uBDb2MDnNVY8jlhy6n//Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Detail image showing preparation of the cable for connection to the RS485 adapter&quot;
+        title=&quot;Detail image showing preparation of the cable for connection to the RS485 adapter&quot;
+        src=&quot;/static/6ec658c181f0a0e20235545aed2fbe53/15ec7/inner_cable_prep.jpg&quot;
+        srcset=&quot;/static/6ec658c181f0a0e20235545aed2fbe53/9ac50/inner_cable_prep.jpg 173w,
+/static/6ec658c181f0a0e20235545aed2fbe53/8d48c/inner_cable_prep.jpg 345w,
+/static/6ec658c181f0a0e20235545aed2fbe53/15ec7/inner_cable_prep.jpg 690w,
+/static/6ec658c181f0a0e20235545aed2fbe53/af659/inner_cable_prep.jpg 1035w,
+/static/6ec658c181f0a0e20235545aed2fbe53/89b2d/inner_cable_prep.jpg 1380w,
+/static/6ec658c181f0a0e20235545aed2fbe53/40317/inner_cable_prep.jpg 2795w&quot;
+        sizes=&quot;(max-width: 690px) 100vw, 690px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Next the RS485 adapter is grounded.&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 690px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/bbb861be4270e4bc10bd42e87f44cc35/1cd85/wiring_rs485_adapter.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 70.52023121387285%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAOABQDASIAAhEBAxEB/8QAGAAAAwEBAAAAAAAAAAAAAAAAAAQFAgP/xAAVAQEBAAAAAAAAAAAAAAAAAAAAAf/aAAwDAQACEAMQAAAByxW5E4aI/8QAGhAAAwADAQAAAAAAAAAAAAAAAAEDAhARE//aAAgBAQABBQK2VXXzoxT4ND1//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPwE//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAgEBPwE//8QAHBAAAgAHAAAAAAAAAAAAAAAAAREAAhIgMoGR/9oACAEBAAY/AqA5Q+xkt2//xAAaEAEAAwADAAAAAAAAAAAAAAABABEhgZGx/9oACAEBAAE/Iad4Vh6lDV3MA0q8zSCJs//aAAwDAQACAAMAAAAQB/8A/8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPxA//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAgEBPxA//8QAHBABAAICAwEAAAAAAAAAAAAAAQARIUFhcaGx/9oACAEBAAE/EH+G168u0cTVb+IA9l9Hd2qYBoLhkKP/2Q==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Detail image showing one approach for grounding the RS485 adapter&quot;
+        title=&quot;Detail image showing one approach for grounding the RS485 adapter&quot;
+        src=&quot;/static/bbb861be4270e4bc10bd42e87f44cc35/15ec7/wiring_rs485_adapter.jpg&quot;
+        srcset=&quot;/static/bbb861be4270e4bc10bd42e87f44cc35/9ac50/wiring_rs485_adapter.jpg 173w,
+/static/bbb861be4270e4bc10bd42e87f44cc35/8d48c/wiring_rs485_adapter.jpg 345w,
+/static/bbb861be4270e4bc10bd42e87f44cc35/15ec7/wiring_rs485_adapter.jpg 690w,
+/static/bbb861be4270e4bc10bd42e87f44cc35/af659/wiring_rs485_adapter.jpg 1035w,
+/static/bbb861be4270e4bc10bd42e87f44cc35/89b2d/wiring_rs485_adapter.jpg 1380w,
+/static/bbb861be4270e4bc10bd42e87f44cc35/1cd85/wiring_rs485_adapter.jpg 2058w&quot;
+        sizes=&quot;(max-width: 690px) 100vw, 690px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Then jumper wires are added to the adapter and the whole thing is assembled into the case.&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 690px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/1f51e020e1b0fc4e5d5838b537f4bd2a/23d91/fully_assembled_cable_and_lid.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 50.28901734104046%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAKABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAIDBf/EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhADEAAAAX0KOQHD/8QAGhAAAgIDAAAAAAAAAAAAAAAAAAECEQMSQf/aAAgBAQABBQLXK5VOxHGf/8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPwE//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAgEBPwE//8QAHBAAAQMFAAAAAAAAAAAAAAAAAQACMQMRICFB/9oACAEBAAY/AjUczYgXXFGH/8QAGhAAAgMBAQAAAAAAAAAAAAAAAAERITEQcf/aAAgBAQABPyFKwpjqxWMe6S3xY0f/2gAMAwEAAgADAAAAEIgv/8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPxA//8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAgEBPxA//8QAHBABAAEEAwAAAAAAAAAAAAAAAQARITGhEEGR/9oACAEBAAE/EOv1U3Lq7gkgYApdKEbir045pln/2Q==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Image showing the assembled case lid, cable, adapter, and jumper wires&quot;
+        title=&quot;Image showing the assembled case lid, cable, adapter, and jumper wires&quot;
+        src=&quot;/static/1f51e020e1b0fc4e5d5838b537f4bd2a/15ec7/fully_assembled_cable_and_lid.jpg&quot;
+        srcset=&quot;/static/1f51e020e1b0fc4e5d5838b537f4bd2a/9ac50/fully_assembled_cable_and_lid.jpg 173w,
+/static/1f51e020e1b0fc4e5d5838b537f4bd2a/8d48c/fully_assembled_cable_and_lid.jpg 345w,
+/static/1f51e020e1b0fc4e5d5838b537f4bd2a/15ec7/fully_assembled_cable_and_lid.jpg 690w,
+/static/1f51e020e1b0fc4e5d5838b537f4bd2a/af659/fully_assembled_cable_and_lid.jpg 1035w,
+/static/1f51e020e1b0fc4e5d5838b537f4bd2a/89b2d/fully_assembled_cable_and_lid.jpg 1380w,
+/static/1f51e020e1b0fc4e5d5838b537f4bd2a/23d91/fully_assembled_cable_and_lid.jpg 3556w&quot;
+        sizes=&quot;(max-width: 690px) 100vw, 690px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Here is the fully assembled unit connected and powered up.&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 690px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/84aa1f68cb564bcf56af21a1dcf9bc1e/c293a/final_all_connected.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 97.68786127167631%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAUABQDASIAAhEBAxEB/8QAGAABAAMBAAAAAAAAAAAAAAAAAAIDBAX/xAAWAQEBAQAAAAAAAAAAAAAAAAAAAQL/2gAMAwEAAhADEAAAAZ25Ls3lpDTUERX/xAAbEAEBAQEAAwEAAAAAAAAAAAABAgMAERITIv/aAAgBAQABBQJA66DO6Lq3S+8frSfWtLR+1c6L3//EABQRAQAAAAAAAAAAAAAAAAAAACD/2gAIAQMBAT8BH//EABQRAQAAAAAAAAAAAAAAAAAAACD/2gAIAQIBAT8BH//EAB4QAAIBAwUAAAAAAAAAAAAAAAABEQIhQRASIjFx/9oACAEBAAY/ArpbRuOiYgh0F1x0Xhgwf//EAB0QAQACAgIDAAAAAAAAAAAAAAEAESFBUZExYXH/2gAIAQEAAT8h8yg85gYGlEuBr7FcGt8RVg7mZgAwlxfw3tPV0i9p0n//2gAMAwEAAgADAAAAEEMgvP/EABURAQEAAAAAAAAAAAAAAAAAAAEQ/9oACAEDAQE/EBjP/8QAFhEAAwAAAAAAAAAAAAAAAAAAESAh/9oACAECAQE/EBU//8QAHBABAQACAwEBAAAAAAAAAAAAAREAITFRYbHB/9oACAEBAAE/EFZoFVRfubUS0G1db9xhKIm19woVTo8Lz7iLGWnV76x9JADq4CaApUsN4vy56n9zeHkx/9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;Image showing the fully assembled unit connected and powered up&quot;
+        title=&quot;Image showing the fully assembled unit connected and powered up&quot;
+        src=&quot;/static/84aa1f68cb564bcf56af21a1dcf9bc1e/15ec7/final_all_connected.jpg&quot;
+        srcset=&quot;/static/84aa1f68cb564bcf56af21a1dcf9bc1e/9ac50/final_all_connected.jpg 173w,
+/static/84aa1f68cb564bcf56af21a1dcf9bc1e/8d48c/final_all_connected.jpg 345w,
+/static/84aa1f68cb564bcf56af21a1dcf9bc1e/15ec7/final_all_connected.jpg 690w,
+/static/84aa1f68cb564bcf56af21a1dcf9bc1e/af659/final_all_connected.jpg 1035w,
+/static/84aa1f68cb564bcf56af21a1dcf9bc1e/c293a/final_all_connected.jpg 1232w&quot;
+        sizes=&quot;(max-width: 690px) 100vw, 690px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+      /&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Note: for initial programming via USB it is necessary to disconnect the green (RX) wire from the esp8266. After initial programming, OTA updates can be used to avoid that step.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;In a future post I will share some sample code and provide power usage benchmarks.&lt;/p&gt;
+&lt;h2 id=&quot;related-work-of-others&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#related-work-of-others&quot; aria-label=&quot;related work of others permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Related Work of Others&lt;/h2&gt;
+&lt;h3 id=&quot;raspberry-pi&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#raspberry-pi&quot; aria-label=&quot;raspberry pi permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Raspberry Pi&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.rototron.info/raspberry-pi-solar-serial-rest-api-tutorial/&quot;&gt;https://www.rototron.info/raspberry-pi-solar-serial-rest-api-tutorial/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://stackoverflow.com/a/57351990&quot;&gt;https://stackoverflow.com/a/57351990&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.navitron.org.uk/forum/index.php?topic=26987.0&quot;&gt;https://www.navitron.org.uk/forum/index.php?topic=26987.0&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://diysolarforum.com/threads/off-grid-solar-battery-monitoring-and-control-freeware.6662/&quot;&gt;https://diysolarforum.com/threads/off-grid-solar-battery-monitoring-and-control-freeware.6662/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;esp8266&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#esp8266&quot; aria-label=&quot;esp8266 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;ESP8266&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.eevblog.com/forum/projects/nodemcu-esp8266-rs485-epever-solar-monitor-diy/&quot;&gt;https://www.eevblog.com/forum/projects/nodemcu-esp8266-rs485-epever-solar-monitor-diy/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.hackster.io/tekk/cheap-mppt-controller-live-stats-on-mobile-3db5be&quot;&gt;https://www.hackster.io/tekk/cheap-mppt-controller-live-stats-on-mobile-3db5be&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.instructables.com/Wireless-Solar-Charge-Controller-Monitor-RS485-to-/&quot;&gt;https://www.instructables.com/Wireless-Solar-Charge-Controller-Monitor-RS485-to-/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content:encoded><author>symbioquine@gmail.com</author></item></channel></rss>
