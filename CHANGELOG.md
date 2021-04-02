@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Bump build NodeJS version in npm-publish.yml to 13.x
 - Add CHANGELOG.md and script to automatically create Github releases
 - Bump ini from 1.3.5 to 1.3.8
 - Bump y18n from 4.0.0 to 4.0.1
