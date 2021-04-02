@@ -19,6 +19,7 @@ jobs:
         with:
           node-version: '13.x'
       - run: npm install
+      - run: npm ci
       - run: npm run build
       - name: Create Release
         id: create_release
@@ -64,3 +65,16 @@ jobs:
           asset_path: ./dist/ol-grid.umd.js
           asset_name: ol-grid.umd.js
           asset_content_type: application/javascript
+
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '13.x'
+          registry-url: https://registry.npmjs.org/
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

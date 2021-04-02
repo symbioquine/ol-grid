@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.1.6] - 2021-04-02
+
+### Changed
+
+- Run NPM release job as part of main Github release action to ensure it gets triggered correctly
+
 ## [v1.1.5] - 2021-04-02
 
 ### Fixed
@@ -51,7 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ironing out Github/NPM release process
 
-[unreleased]: https://github.com/symbioquine/ol-grid/compare/v1.1.5...HEAD
+[unreleased]: https://github.com/symbioquine/ol-grid/compare/v1.1.6...HEAD
+[1.1.6]: https://github.com/symbioquine/ol-grid/compare/v1.1.5...v1.1.6
 [1.1.5]: https://github.com/symbioquine/ol-grid/compare/v1.1.4...v1.1.5
 [1.1.4]: https://github.com/symbioquine/ol-grid/compare/v1.1.2...v1.1.4
 [1.1.2]: https://github.com/symbioquine/ol-grid/compare/v1.1.1...v1.1.2
