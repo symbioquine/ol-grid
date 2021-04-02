@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix issue where grid doesn't get redrawn when `setActive` is toggled on/off and nothing else changed
+
 ### Changed
 
 - Bump build NodeJS version in npm-publish.yml to 13.x

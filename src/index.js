@@ -126,7 +126,6 @@ export default class Grid extends Interaction {
    * @api
    */
   setYGridSize(yGridSize) {
-    this.set(yGridSize, )
     this.yGridSize = yGridSize;
     this.updateGridDescription_();
   }
@@ -177,6 +176,7 @@ export default class Grid extends Interaction {
 
     if (!map || !this.originCoordinate || !this.xGridSize || !this.yGridSize || !this.getActive()) {
       this.gridDescription_ = null;
+      this.lastGridDescription_ = null;
       this.gridFeature_.getGeometry().setCoordinates([]);
       this.changed();
       return;
