@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Use `npm ci` correctly in Github release jobs
 - Run NPM release job as part of main Github release action to ensure it gets triggered correctly
 
 ## [v1.1.5] - 2021-04-02
