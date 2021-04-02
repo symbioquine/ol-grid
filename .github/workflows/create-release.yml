@@ -33,7 +33,7 @@ jobs:
           draft: false
           prerelease: false
       - name: Upload 'ol-grid.cjs.js' Release Asset
-        id: upload-release-asset
+        id: upload-cjs-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -45,7 +45,7 @@ jobs:
           asset_name: ol-grid.cjs.js
           asset_content_type: application/javascript
       - name: Upload 'ol-grid.esm.js' Release Asset
-        id: upload-release-asset
+        id: upload-esm-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -55,7 +55,7 @@ jobs:
           asset_name: ol-grid.esm.js
           asset_content_type: application/javascript
       - name: Upload 'ol-grid.umd.js' Release Asset
-        id: upload-release-asset
+        id: upload-umd-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
