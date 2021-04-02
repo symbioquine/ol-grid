@@ -7,12 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.1.5] - 2021-04-02
+
 ### Fixed
 
 - Fix issue where grid doesn't get redrawn when `setActive` is toggled on/off and nothing else changed
 
 ### Changed
 
+- `npm update`
 - Bump build NodeJS version in npm-publish.yml to 13.x
 - Add CHANGELOG.md and script to automatically create Github releases
 - Bump ini from 1.3.5 to 1.3.8
@@ -48,7 +51,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ironing out Github/NPM release process
 
-[unreleased]: https://github.com/symbioquine/ol-grid/compare/v1.1.4...HEAD
+[unreleased]: https://github.com/symbioquine/ol-grid/compare/v1.1.5...HEAD
+[1.1.5]: https://github.com/symbioquine/ol-grid/compare/v1.1.4...v1.1.5
 [1.1.4]: https://github.com/symbioquine/ol-grid/compare/v1.1.2...v1.1.4
 [1.1.2]: https://github.com/symbioquine/ol-grid/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/symbioquine/ol-grid/compare/v1.1...v1.1.1

@@ -1,5 +1,9 @@
 # ol-grid
 
+[![Licence](https://img.shields.io/badge/Licence-MIT-blue.svg)](https://opensource.org/licenses/MIT/)
+[![Release](https://img.shields.io/github/release/symbioquine/ol-grid.svg?style=flat)](https://github.com/symbioquine/ol-grid/releases)
+[![Last commit](https://img.shields.io/github/last-commit/symbioquine/ol-grid.svg?style=flat)](https://github.com/symbioquine/ol-grid/commits)
+
 Dynamic grid implementation for OpenLayers 6.
 
 Renders a regular grid of points within the current view extents. Intended for use as part of advanced snapping controls.
@@ -50,7 +54,7 @@ Renders a regular grid of points within the current view extents. Intended for u
 ### Via NPM
 
 ```sh
-npm install git://github.com/symbioquine/ol-grid.git#v1.1.2
+npm i ol-grid
 ```
 
 ```Javascript
@@ -86,6 +90,7 @@ map.addInteraction(new olGrid());
         -   [Parameters](#parameters-6)
     -   [setMap](#setmap)
         -   [Parameters](#parameters-7)
+    -   [changed](#changed)
 
 ### Options
 
@@ -174,6 +179,8 @@ Set the style of the grid points.
 
 -   `map` **ol.PluggableMap** Map.
 
+#### changed
+
 ### 
 
 Type: Interaction.InteractionOptions
@@ -183,7 +190,7 @@ Type: Interaction.InteractionOptions
 `npm install` - Install JavaScript dependencies in `./node_modules` and create
 `package-lock.json`.
 
-`npm run dev` - Start a Webpack development server at https://localhost:8080
+`npm run dev` - Start a Webpack development server at <https://localhost:8080>
 which will live-update as code is changed during development.
 
 `npm run build` - Generate the final build artifacts.
