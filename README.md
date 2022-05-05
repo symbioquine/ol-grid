@@ -71,26 +71,26 @@ map.addInteraction(new olGrid());
 
 #### Table of Contents
 
--   [Options](#options)
-    -   [Properties](#properties)
--   [Grid](#grid)
-    -   [Parameters](#parameters)
-    -   [getGridFeature](#getgridfeature)
-    -   [setOriginPoint](#setoriginpoint)
-        -   [Parameters](#parameters-1)
-    -   [setRotationControlPoint](#setrotationcontrolpoint)
-        -   [Parameters](#parameters-2)
-    -   [setXGridSize](#setxgridsize)
-        -   [Parameters](#parameters-3)
-    -   [setYGridSize](#setygridsize)
-        -   [Parameters](#parameters-4)
-    -   [setMaxPointsPerSide](#setmaxpointsperside)
-        -   [Parameters](#parameters-5)
-    -   [setStyle](#setstyle)
-        -   [Parameters](#parameters-6)
-    -   [setMap](#setmap)
-        -   [Parameters](#parameters-7)
-    -   [changed](#changed)
+*   [Options](#options)
+    *   [Properties](#properties)
+*   [Grid](#grid)
+    *   [Parameters](#parameters)
+    *   [getGridFeature](#getgridfeature)
+    *   [setOriginPoint](#setoriginpoint)
+        *   [Parameters](#parameters-1)
+    *   [setRotationControlPoint](#setrotationcontrolpoint)
+        *   [Parameters](#parameters-2)
+    *   [setXGridSize](#setxgridsize)
+        *   [Parameters](#parameters-3)
+    *   [setYGridSize](#setygridsize)
+        *   [Parameters](#parameters-4)
+    *   [setMaxPointsPerSide](#setmaxpointsperside)
+        *   [Parameters](#parameters-5)
+    *   [setStyle](#setstyle)
+        *   [Parameters](#parameters-6)
+    *   [setMap](#setmap)
+        *   [Parameters](#parameters-7)
+    *   [changed](#changed)
 
 ### Options
 
@@ -98,12 +98,12 @@ Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Globa
 
 #### Properties
 
--   `originCoordinate` **ol.Coordinate?** origin coordinate for the grid
--   `rotationAnchorCoordinate` **ol.Coordinate?** coordinate describing the rotation of the grid
--   `xGridSize` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** the x grid size. If the origin point and rotation anchor point have the same latitude, then this sets the horizontal (width) of the grid cells.
--   `yGridSize` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** the y grid size. If the origin point and rotation anchor point have the same latitude, then this sets the vertical (height) of the grid cells.
--   `maxPointsPerSide` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** the max number of points per side. Controls the maximum number of points to be drawn on the screen at one time.
--   `style` **ol.style.StyleLike?** grid point style
+*   `originCoordinate` **ol.Coordinate?** origin coordinate for the grid
+*   `rotationAnchorCoordinate` **ol.Coordinate?** coordinate describing the rotation of the grid
+*   `xGridSize` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** the x grid size. If the origin point and rotation anchor point have the same latitude, then this sets the horizontal (width) of the grid cells.
+*   `yGridSize` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** the y grid size. If the origin point and rotation anchor point have the same latitude, then this sets the vertical (height) of the grid cells.
+*   `maxPointsPerSide` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)?** the max number of points per side. Controls the maximum number of points to be drawn on the screen at one time.
+*   `style` **ol.style.StyleLike?** grid point style
 
 ### Grid
 
@@ -111,7 +111,7 @@ Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Globa
 
 #### Parameters
 
--   `opt_options` **[Options](#options)?** Options.
+*   `opt_options` **[Options](#options)?** Options.
 
 #### getGridFeature
 
@@ -128,7 +128,7 @@ Set the origin coordinate for the grid.
 
 ##### Parameters
 
--   `originCoordinate` **ol.Coordinate** Coordinate.
+*   `originCoordinate` **ol.Coordinate** Coordinate.
 
 #### setRotationControlPoint
 
@@ -136,7 +136,7 @@ Set the rotation anchor coordinate used to control how the rid is rotated.
 
 ##### Parameters
 
--   `rotationAnchorCoordinate` **ol.Coordinate** Coordinate.
+*   `rotationAnchorCoordinate` **ol.Coordinate** Coordinate.
 
 #### setXGridSize
 
@@ -145,7 +145,7 @@ same latitude, then this sets the horizontal (width) of the grid cells.
 
 ##### Parameters
 
--   `xGridSize` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** number in map units.
+*   `xGridSize` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** number in map units.
 
 #### setYGridSize
 
@@ -154,7 +154,7 @@ same latitude, then this sets the vertical (height) of the grid cells.
 
 ##### Parameters
 
--   `yGridSize` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** number in map units.
+*   `yGridSize` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** number in map units.
 
 #### setMaxPointsPerSide
 
@@ -163,7 +163,7 @@ to be drawn on the screen at one time.
 
 ##### Parameters
 
--   `maxPointsPerSide` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** number of points per side.
+*   `maxPointsPerSide` **[number](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number)** number of points per side.
 
 #### setStyle
 
@@ -171,17 +171,17 @@ Set the style of the grid points.
 
 ##### Parameters
 
--   `style` **ol.style.StyleLike** of the grid points.
+*   `style` **ol.style.StyleLike** of the grid points.
 
 #### setMap
 
 ##### Parameters
 
--   `map` **ol.PluggableMap** Map.
+*   `map` **ol.PluggableMap** Map.
 
 #### changed
 
-### 
+###
 
 Type: Interaction.InteractionOptions
 

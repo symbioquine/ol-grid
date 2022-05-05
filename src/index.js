@@ -1,7 +1,6 @@
 import Interaction from 'ol/interaction/Interaction';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import { getChangeEventType } from 'ol/Object';
 
 import { getCenter as getExtentCenter } from 'ol/extent';
 import { getDistance as getSphericalDistance } from 'ol/sphere';
@@ -73,7 +72,7 @@ export default class Grid extends Interaction {
     this.overlay_.getSource().addFeature(this.gridFeature_);
 
     this.overlay_.on('postrender', this.handleGridLayerPostRender_.bind(this));
-    this.addEventListener(getChangeEventType('active'), this.updateState_);
+    this.addEventListener('change:active', this.updateState_);
   }
 
   /**

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated OpenLayers to 6.14.1
+- Ran `npm audit fix --force` to update other dependencies
 
 ## [1.1.6] - 2021-04-02
 
