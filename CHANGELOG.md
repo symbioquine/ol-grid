@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2022-05-05
+
+### Changed
+
+- Updated OpenLayers to 10.4.0
+- Ran `npm audit fix --force` to update other dependencies
+
 ## [1.1.7] - 2022-05-05
 
 ### Changed
@@ -65,7 +72,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Ironing out Github/NPM release process
 
-[unreleased]: https://github.com/symbioquine/ol-grid/compare/v1.1.7...HEAD
+[unreleased]: https://github.com/symbioquine/ol-grid/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/symbioquine/ol-grid/compare/v1.1.7...v2.0.0
 [1.1.7]: https://github.com/symbioquine/ol-grid/compare/v1.1.6...v1.1.7
 [1.1.6]: https://github.com/symbioquine/ol-grid/compare/v1.1.5...v1.1.6
 [1.1.5]: https://github.com/symbioquine/ol-grid/compare/v1.1.4...v1.1.5

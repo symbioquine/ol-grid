@@ -4,7 +4,7 @@
 [![Release](https://img.shields.io/github/release/symbioquine/ol-grid.svg?style=flat)](https://github.com/symbioquine/ol-grid/releases)
 [![Last commit](https://img.shields.io/github/last-commit/symbioquine/ol-grid.svg?style=flat)](https://github.com/symbioquine/ol-grid/commits)
 
-Dynamic grid implementation for OpenLayers 6.
+Dynamic grid implementation for OpenLayers.
 
 Renders a regular grid of points within the current view extents. Intended for use as part of advanced snapping controls.
 
@@ -18,15 +18,15 @@ Renders a regular grid of points within the current view extents. Intended for u
 <!doctype html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.14.1/css/ol.css" type="text/css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@main/dist/en/v10.4.0/ol/ol.css" type="text/css">
     <style>
       .map {
         height: 400px;
         width: 100%;
       }
     </style>
-    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.14.1/build/ol.js"></script>
-    <script src="https://github.com/symbioquine/ol-grid/releases/download/v1.1.7/ol-grid.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@main/dist/en/v10.4.0/ol/dist/ol.js"></script>
+    <script src="https://github.com/symbioquine/ol-grid/releases/download/v2.0.0/ol-grid.umd.js"></script>
     <title>OpenLayers ol-grid example</title>
   </head>
   <body>
